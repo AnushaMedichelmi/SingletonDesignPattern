@@ -9,26 +9,37 @@ public class EthanAIController : MonoBehaviour
     private GameObject[] goalPoints;
     NavMeshAgent agent;
     Vector3 lastPoint;
-
-    // Start is called before the first frame update
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
         goalPoints = GameObject.FindGameObjectsWithTag("Goal");
-        GoToLocation();
-
+        GotoLocation();
     }
 
     // Update is called once per frame
     void Update()
     {
-        if(agent.remainingDistance<1f)
+
+        if (agent.remainingDistance < 1f)
         {
-            GoToLocation();
+            GotoLocation();
+        }
+        // Vector3.Distance(this.transform.position,);
+        foreach (GameObject item in GameManager.Instance.TrashCans)
+        {
+            float tempDistance = Vector3.Distance(this.transform.position, item.transform.position);
+            if (tempDistance < 5f && Random.Range(0, 10) < 5)
+            {
+                // print("char distance is below 5");
+                agent.SetDestination(lastPoint);
+            }
+            else if (tempDistance < 1f)
+            {
+                GameManager.Instance.RemoveTrashCan(item);
+            }
         }
     }
-
-    public void GoToLocation()
+    public void GotoLocation()
     {
         lastPoint = agent.destination;
         agent.SetDestination(goalPoints[Random.Range(0, goalPoints.Length)].transform.position);
